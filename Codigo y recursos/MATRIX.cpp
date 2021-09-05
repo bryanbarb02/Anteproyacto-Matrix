@@ -45,8 +45,8 @@ int main()
 	al_reserve_samples(1);
 	al_install_keyboard();
 
-	display = al_create_display(720, 480);
-	al_set_window_position(display, 200, 200);
+	display = al_create_display(800, 600);
+	al_set_new_display_flags(ALLEGRO_WINDOWED);
 	al_set_window_title(display, "MATRIX");
 
 	if (!display)
@@ -55,34 +55,101 @@ int main()
 	}
 
 	//fuente = al_load_font("Chiken.ttf", 12, NULL);
-	//fuente2 = al_load_font("Chiken.ttf", 18, NULL);
-	//intro = al_load_sample("MUSICA/intro.wav");
+	
+
+	intro = al_load_sample("MUSICA/intro.WAV");
+	fuente2 = al_load_font("Chiken.otf", 20, NULL);
 	//fondo = al_load_sample("MUSICA/sound.wav");
 
 
-	ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
+	ALLEGRO_EVENT_QUEUE* Cola_eventos = al_create_event_queue();
 
 	al_install_keyboard();
-	al_register_event_source(event_queue, al_get_keyboard_event_source());
+	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
 
-	bool done = false, draw = true;
-	int x = 20, y = 400, x2 = 600, y2 = 100;
-	int moveSpeed = 5;
 
 	ALLEGRO_TIMER* timer = al_create_timer(2.0 / FPS);
-	al_register_event_source(event_queue, al_get_timer_event_source(timer));
+	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer));
 
+	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10);
+	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer2));
+
+	
+	al_start_timer(timer2);
+	int cont = 0;
+
+	while (cont < 16)
+	{
+		ALLEGRO_EVENT eventos;
+		al_clear_to_color(al_map_rgb(0, 0, 0));
+		if (cont < 10)
+			al_play_sample(intro, 1.0, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+		al_wait_for_event(Cola_eventos, &eventos);
+		if (eventos.type == ALLEGRO_EVENT_TIMER) {
+			if (eventos.timer.source == timer2) {
+				if (cont == 0) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "T");
+					cont++;
+				}
+				else if (cont == 1) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "TH");
+					cont++;
+				}
+				else if (cont == 2) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE");
+					cont++;
+				}
+				else if (cont == 3) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE_");
+					cont++;
+				}
+				else if (cont == 4) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE M");
+					cont++;
+				}
+				else if (cont == 5) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MA");
+					cont++;
+				}
+				else if (cont == 6) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MAT");
+					cont++;
+				}
+				else if (cont == 7) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATR");
+					cont++;
+				}
+				else if (cont == 8) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRI");
+					cont++;
+				}
+				else if (cont == 9) {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
+					cont++;
+				}
+				else if (cont == 15) {
+					al_clear_to_color(al_map_rgb(0, 0, 0));
+					cont++;
+				}
+				else {
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
+					cont++;
+				}
+			}
+		}
+		al_flip_display();
+	}
+	al_destroy_font(fuente2);
+	
+	bool done = false;
 	al_start_timer(timer);
-
-
 
 	while (!done)
 	{
 
-
 		ALLEGRO_EVENT events;
-		al_wait_for_event(event_queue, &events);
-
+		al_wait_for_event(Cola_eventos, &events);
+		al_clear_to_color(al_map_rgb(0, 0, 0));
 		if (events.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
 			switch (events.keyboard.keycode)
@@ -93,9 +160,6 @@ int main()
 			}
 		}
 	}
-
-
-
 
 	al_destroy_display(display);
 
