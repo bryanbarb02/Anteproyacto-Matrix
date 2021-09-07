@@ -29,6 +29,22 @@ using namespace std;
 
 #pragma warning(disable:4996);
 
+//Genera un número random entre 5 y 20
+int longitud()
+{
+	return (int)(5 + rand() % 20);
+}
+
+typedef struct hilera {
+	int longitud;
+	int X;
+	int Y;
+};
+
+
+
+
+
 int main()
 {
 
@@ -54,12 +70,12 @@ int main()
 		al_show_native_message_box(display, "ERROR", "Display Settings", "Display Window was not created successfully", NULL, NULL);
 	}
 
-	//fuente = al_load_font("Chiken.ttf", 12, NULL);
+	fuente = al_load_font("Chiken.otf", 12, NULL);
 	
 
 	intro = al_load_sample("MUSICA/intro.WAV");
 	fuente2 = al_load_font("Chiken.otf", 20, NULL);
-	//fondo = al_load_sample("MUSICA/sound.wav");
+	fondo = al_load_sample("MUSICA/sound.wav");
 
 
 	ALLEGRO_EVENT_QUEUE* Cola_eventos = al_create_event_queue();
@@ -140,9 +156,13 @@ int main()
 		al_flip_display();
 	}
 	al_destroy_font(fuente2);
+	al_destroy_sample(intro);
+
 	
+
 	bool done = false;
 	al_start_timer(timer);
+	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 
 	while (!done)
 	{
@@ -160,7 +180,8 @@ int main()
 			}
 		}
 	}
-
+	al_destroy_font(fuente);
+	al_destroy_sample(fondo);
 	al_destroy_display(display);
 
 
