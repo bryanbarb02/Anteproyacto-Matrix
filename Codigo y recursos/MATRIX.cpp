@@ -29,25 +29,80 @@ using namespace std;
 
 #pragma warning(disable:4996);
 
+int total = (int)(30 + rand() % 50); //Total de cadenas de caracteres que caen en pantalla
+
+
+typedef struct cadena {
+	char caracter;
+	cadena* siguiente;
+};
+
+typedef struct hilera {
+	int longitud;
+	int X;
+	int Y;
+	//bool estado;
+	int contador;
+	cadena* caracter;
+	hilera* siguiente;
+};
+
 //Genera un número random entre 5 y 20
 int longitud()
 {
 	return (int)(5 + rand() % 20);
 }
 
-typedef struct hilera {
-	int longitud;
-	int X;
-	int Y;
-};
+/*Añade un caracter a la lista enlazada de caracteres*/
+void añadirCaracter(cadena*& caracter, cadena*& nuevo)
+{
+	if (caracter != NULL)
+		nuevo->siguiente = caracter;
+	caracter = nuevo;
+}
+
+//Asigna un caracter random y NULL al puntero siguiente
+void iniciarCaracter(cadena*& caracter)
+{
+	caracter->caracter = 33 + rand() % 93;
+	caracter->siguiente = NULL;
+}
+
+//Añade una hilera a la lista enlazada de hileras
+void añadirHilera(hilera*& arrayHilera, hilera*& nuevo)
+{
+	if (arrayHilera != NULL)
+		nuevo->siguiente = arrayHilera;
+	arrayHilera = nuevo;
+}
+
+//Crea una hilera e inicializa los atributos de la hilera
+void crearHilera(hilera*& Aux)
+{
+	Aux->longitud = longitud();
+	Aux->X = rand() % 800;
+	Aux->Y = rand() % 300;
+	Aux->siguiente = NULL;
+	Aux->contador = 0;
+	Aux->caracter;
+	iniciarCaracter(Aux->caracter);
+}
+
+//Crea una cantidad de hileras segun el valor de la variable total
+//Son las hileras que se añadiran a la lista enlazada
+void InicializarArray(hilera*& ArrayHileras, int total)
+{
+	for (int i = 0; i < total; i++) {
+		hilera* Aux = new hilera();
+		crearHilera(Aux);
+		añadirHilera(ArrayHileras, Aux);
+	}
+}
 
 
-
-
-
+//Programa principal
 int main()
 {
-
 	if (!al_init())
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Could not initialize Allegro 5 ", NULL, NULL);
@@ -71,29 +126,28 @@ int main()
 	}
 
 	fuente = al_load_font("Chiken.otf", 12, NULL);
-	
+	intro = al_load_sample("MUSICA/intro.WAV"); //sonido utilizado para la pantalla inical
+	fuente2 = al_load_font("Chiken.otf", 20, NULL); //Fuente para la pantalla inicial
+	fondo = al_load_sample("MUSICA/sound.wav"); //Sonido de fondo durante la simulación
 
-	intro = al_load_sample("MUSICA/intro.WAV");
-	fuente2 = al_load_font("Chiken.otf", 20, NULL);
-	fondo = al_load_sample("MUSICA/sound.wav");
-
-
-	ALLEGRO_EVENT_QUEUE* Cola_eventos = al_create_event_queue();
+	ALLEGRO_EVENT_QUEUE* Cola_eventos = al_create_event_queue(); //Se cre la cola de eventos
 
 	al_install_keyboard();
 	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
 
 
-	ALLEGRO_TIMER* timer = al_create_timer(2.0 / FPS);
+	ALLEGRO_TIMER* timer = al_create_timer(2.0 / FPS); //Timer para la simulacion 
 	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer));
 
-	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10);
+	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10); //Timer para la pantalla inicial
 	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer2));
 
 	
 	al_start_timer(timer2);
 	int cont = 0;
-
+	
+	//PANTALLA INTRODUCTORIA
+	//////////////////////POR MEJORAR////////////////////////////
 	while (cont < 16)
 	{
 		ALLEGRO_EVENT eventos;
@@ -158,12 +212,21 @@ int main()
 	al_destroy_font(fuente2);
 	al_destroy_sample(intro);
 
+	/*
+	Aún no se ha implementado
+	 
+	hilera* ArrayHileras;
+	InicializarArray(ArrayHileras, total);	
+	*/
 	
 
-	bool done = false;
-	al_start_timer(timer);
-	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 
+	bool done = false;
+	al_start_timer(timer); //Timer para la simulacion
+	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL); //Sonido de fondo durante la simulacion
+
+	//INICIO DE LA SIMULACION
+	//La simulación termina si se presicona la tecla ESCAPE
 	while (!done)
 	{
 
