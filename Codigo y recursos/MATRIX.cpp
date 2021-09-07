@@ -15,6 +15,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
+#include <string>
 
 
 ALLEGRO_DISPLAY* display;
@@ -145,56 +146,18 @@ int main()
 	
 	al_start_timer(timer2);
 	int cont = 0;
-	
+	const char* matrix[] = { "T", "TH", "THE", "THE_", "THE M", "THE MA", "THE MAT", "THE MATR", "THE MATRI", "THE MATRIX" };
 	//PANTALLA INTRODUCTORIA
-	//////////////////////POR MEJORAR////////////////////////////
 	while (cont < 16)
 	{
 		ALLEGRO_EVENT eventos;
 		al_clear_to_color(al_map_rgb(0, 0, 0));
-		if (cont < 10)
-			al_play_sample(intro, 1.0, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
 		al_wait_for_event(Cola_eventos, &eventos);
 		if (eventos.type == ALLEGRO_EVENT_TIMER) {
 			if (eventos.timer.source == timer2) {
-				if (cont == 0) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "T");
-					cont++;
-				}
-				else if (cont == 1) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "TH");
-					cont++;
-				}
-				else if (cont == 2) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE");
-					cont++;
-				}
-				else if (cont == 3) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE_");
-					cont++;
-				}
-				else if (cont == 4) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE M");
-					cont++;
-				}
-				else if (cont == 5) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MA");
-					cont++;
-				}
-				else if (cont == 6) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MAT");
-					cont++;
-				}
-				else if (cont == 7) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATR");
-					cont++;
-				}
-				else if (cont == 8) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRI");
-					cont++;
-				}
-				else if (cont == 9) {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
+				if (cont < 10) {
+					al_play_sample(intro, 1.0, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, matrix[cont]);
 					cont++;
 				}
 				else if (cont == 15) {
@@ -203,7 +166,7 @@ int main()
 				}
 				else {
 					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
-					cont++;
+					cont++; 
 				}
 			}
 		}
