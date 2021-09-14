@@ -34,7 +34,7 @@ int total = (int)(30 + rand() % 50); //Total de cadenas de caracteres que caen e
 
 
 typedef struct cadena {
-	char caracter;
+	char letra;
 	cadena* siguiente;
 };
 
@@ -47,6 +47,18 @@ typedef struct hilera {
 	cadena* caracter;
 	hilera* siguiente;
 };
+
+long g_seed = 1;
+inline int fastrand() {
+	g_seed = (214013 * g_seed + 2531011);
+	return (g_seed >> 16) & 0x7FFF;
+}
+//Genera un caracter random
+char GenerarRandom()
+{
+	char c = 'A' + fastrand() % 24;
+	return c;
+}
 
 //Genera un número random entre 5 y 20
 int longitud()
@@ -65,7 +77,7 @@ void añadirCaracter(cadena*& caracter, cadena*& nuevo)
 //Asigna un caracter random y NULL al puntero siguiente
 void iniciarCaracter(cadena*& caracter)
 {
-	caracter->caracter = 33 + rand() % 93;
+	caracter->letra = GenerarRandom();
 	caracter->siguiente = NULL;
 }
 
@@ -85,7 +97,7 @@ void crearHilera(hilera*& Aux)
 	Aux->Y = rand() % 300;
 	Aux->siguiente = NULL;
 	Aux->contador = 0;
-	Aux->caracter;
+	Aux->caracter = new cadena();
 	iniciarCaracter(Aux->caracter);
 }
 
@@ -175,12 +187,12 @@ int main()
 	al_destroy_font(fuente2);
 	al_destroy_sample(intro);
 
-	/*
-	Aún no se ha implementado
+	
+	
 	 
 	hilera* ArrayHileras;
 	InicializarArray(ArrayHileras, total);	
-	*/
+	
 	
 
 
