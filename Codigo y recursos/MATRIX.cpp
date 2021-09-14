@@ -34,9 +34,9 @@ int total = (int)(30 + rand() % 50); //Total de cadenas de caracteres que caen e
 
 
 typedef struct cadena {
-	char letra;
+	char letra[1];
 	cadena* siguiente;
-};
+}*PtrCadena;
 
 typedef struct hilera {
 	int longitud;
@@ -44,9 +44,11 @@ typedef struct hilera {
 	int Y;
 	//bool estado;
 	int contador;
-	cadena* caracter;
+	PtrCadena caracter;
 	hilera* siguiente;
-};
+}*PtrHilera;
+
+
 
 long g_seed = 1;
 inline int fastrand() {
@@ -67,7 +69,7 @@ int longitud()
 }
 
 /*Añade un caracter a la lista enlazada de caracteres*/
-void añadirCaracter(cadena*& caracter, cadena*& nuevo)
+void añadirCaracter(PtrCadena& caracter, PtrCadena& nuevo)
 {
 	if (caracter != NULL)
 		nuevo->siguiente = caracter;
@@ -77,12 +79,12 @@ void añadirCaracter(cadena*& caracter, cadena*& nuevo)
 //Asigna un caracter random y NULL al puntero siguiente
 void iniciarCaracter(cadena*& caracter)
 {
-	caracter->letra = GenerarRandom();
+	caracter->letra[0] = GenerarRandom();
 	caracter->siguiente = NULL;
 }
 
 //Añade una hilera a la lista enlazada de hileras
-void añadirHilera(hilera*& arrayHilera, hilera*& nuevo)
+void añadirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
 {
 	if (arrayHilera != NULL)
 		nuevo->siguiente = arrayHilera;
@@ -90,28 +92,98 @@ void añadirHilera(hilera*& arrayHilera, hilera*& nuevo)
 }
 
 //Crea una hilera e inicializa los atributos de la hilera
-void crearHilera(hilera*& Aux)
+void crearHilera(PtrHilera& Aux)
 {
 	Aux->longitud = longitud();
 	Aux->X = rand() % 800;
 	Aux->Y = rand() % 300;
 	Aux->siguiente = NULL;
-	Aux->contador = 0;
-	Aux->caracter = new cadena();
+	Aux->contador = 1;
+	Aux->caracter = new (cadena);
 	iniciarCaracter(Aux->caracter);
 }
 
 //Crea una cantidad de hileras segun el valor de la variable total
 //Son las hileras que se añadiran a la lista enlazada
-void InicializarArray(hilera*& ArrayHileras, int total)
+void InicializarArray(PtrHilera& ArrayHileras, int total)
 {
 	for (int i = 0; i < total; i++) {
-		hilera* Aux = new hilera();
+		PtrHilera Aux = new (hilera);
 		crearHilera(Aux);
 		añadirHilera(ArrayHileras, Aux);
 	}
 }
 
+
+void dibujar(PtrHilera& ArrayHileras)
+{
+	PtrHilera Aux = NULL;
+	Aux = ArrayHileras;
+	while (Aux != NULL)
+	{
+		PtrCadena Aux2 = Aux->caracter;
+		int cont = 0;
+		int Y = Aux->Y;
+		int X = Aux->X;
+		while (Aux2 != NULL)
+		{
+			if (cont == 0)
+				al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			else
+				al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			cont++;
+			Y += 20;
+			Aux2 = Aux2->siguiente;
+		}
+		Aux = Aux->siguiente;
+	}
+}
+
+void eliminarCaracter(PtrCadena& cadena)
+{
+	PtrCadena Aux = cadena;
+	PtrCadena Aux2 = NULL;
+	if (Aux->siguiente != NULL)
+	{
+		while (Aux->siguiente != NULL)
+		{
+			Aux2 = Aux;
+			Aux = Aux->siguiente;
+		}
+		delete(Aux);
+		Aux2->siguiente = NULL;
+	}
+	delete (Aux);
+	cadena = NULL;
+}
+
+void EliminarHilera(PtrHilera ArrayHilera);
+
+void verificar(PtrHilera& ArrayHilera)
+{
+	PtrHilera Aux = NULL;
+	Aux = ArrayHilera;
+	while (Aux != NULL)
+	{
+		if (Aux->contador <= Aux->longitud)
+		{
+			PtrCadena nuevo = new (cadena);
+			iniciarCaracter(nuevo);
+			añadirCaracter(Aux->caracter, nuevo);
+			Aux->contador++;
+		}
+		if (Aux->contador > Aux->longitud)
+		{
+			if (Aux->caracter == NULL)
+			{
+				EliminarHilera(ArrayHilera);
+			}
+			eliminarCaracter(Aux->caracter);
+		}
+
+		Aux = Aux->siguiente;
+	}
+}
 
 //Programa principal
 int main()
@@ -190,7 +262,7 @@ int main()
 	
 	
 	 
-	hilera* ArrayHileras;
+	PtrHilera ArrayHileras;
 	InicializarArray(ArrayHileras, total);	
 	
 	
@@ -205,16 +277,22 @@ int main()
 	while (!done)
 	{
 
-		ALLEGRO_EVENT events;
-		al_wait_for_event(Cola_eventos, &events);
+		ALLEGRO_EVENT eventos;
+		al_wait_for_event(Cola_eventos, &eventos);
 		al_clear_to_color(al_map_rgb(0, 0, 0));
-		if (events.type == ALLEGRO_EVENT_KEY_DOWN)
+		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
-			switch (events.keyboard.keycode)
+			switch (eventos.keyboard.keycode)
 			{
 			case ALLEGRO_KEY_ESCAPE:
 				done = true;
 				break;
+			}
+		}
+		if (eventos.type == ALLEGRO_EVENT_TIMER) {
+			if (eventos.timer.source == timer) {
+				dibujar(ArrayHileras);
+				verificar(ArrayHileras);
 			}
 		}
 	}
