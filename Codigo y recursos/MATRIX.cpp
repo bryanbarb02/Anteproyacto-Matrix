@@ -19,10 +19,10 @@
 
 
 ALLEGRO_DISPLAY* display;
-ALLEGRO_FONT* fuente = NULL;
-ALLEGRO_FONT* fuente2 = NULL;
-ALLEGRO_SAMPLE* intro = NULL;
-ALLEGRO_SAMPLE* fondo = NULL;
+ALLEGRO_FONT* fuente;
+ALLEGRO_FONT* fuente2;
+ALLEGRO_SAMPLE* intro;
+ALLEGRO_SAMPLE* fondo;
 ALLEGRO_TIMER* timer;
 
 using namespace std;
@@ -30,7 +30,11 @@ using namespace std;
 
 #pragma warning(disable:4996);
 
-int total = (int)(30 + rand() % 50); //Total de cadenas de caracteres que caen en pantalla
+
+
+
+//int total = (int)(30 + rand() % 21); //Total de cadenas de caracteres que caen en pantalla
+int total = 30;
 
 
 typedef struct cadena {
@@ -48,8 +52,6 @@ typedef struct hilera {
 	hilera* siguiente;
 }*PtrHilera;
 
-
-
 long g_seed = 1;
 inline int fastrand() {
 	g_seed = (214013 * g_seed + 2531011);
@@ -65,7 +67,7 @@ char GenerarRandom()
 //Genera un número random entre 5 y 20
 int longitud()
 {
-	return (int)(5 + rand() % 20);
+	return (int)(5 + fastrand() % 20);
 }
 
 /*Añade un caracter a la lista enlazada de caracteres*/
@@ -87,7 +89,7 @@ void iniciarCaracter(cadena*& caracter)
 void añadirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
 {
 	if (arrayHilera != NULL)
-		nuevo->siguiente = arrayHilera;
+	nuevo->siguiente = arrayHilera;
 	arrayHilera = nuevo;
 }
 
@@ -95,8 +97,8 @@ void añadirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
 void crearHilera(PtrHilera& Aux)
 {
 	Aux->longitud = longitud();
-	Aux->X = rand() % 800;
-	Aux->Y = rand() % 300;
+	Aux->X = 5 + rand() % 890;
+	Aux->Y = 5 + rand() % 300;
 	Aux->siguiente = NULL;
 	Aux->contador = 1;
 	Aux->caracter = new (cadena);
@@ -107,6 +109,7 @@ void crearHilera(PtrHilera& Aux)
 //Son las hileras que se añadiran a la lista enlazada
 void InicializarArray(PtrHilera& ArrayHileras, int total)
 {
+	ArrayHileras = NULL;
 	for (int i = 0; i < total; i++) {
 		PtrHilera Aux = new (hilera);
 		crearHilera(Aux);
@@ -128,7 +131,9 @@ void dibujar(PtrHilera& ArrayHileras)
 		while (Aux2 != NULL)
 		{
 			if (cont == 0)
+			{
 				al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			}
 			else
 				al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
 			cont++;
@@ -141,7 +146,8 @@ void dibujar(PtrHilera& ArrayHileras)
 
 void eliminarCaracter(PtrCadena& cadena)
 {
-	PtrCadena Aux = cadena;
+	PtrCadena Aux = NULL;
+	Aux = cadena;
 	PtrCadena Aux2 = NULL;
 	if (Aux->siguiente != NULL)
 	{
@@ -157,37 +163,38 @@ void eliminarCaracter(PtrCadena& cadena)
 	cadena = NULL;
 }
 
-void EliminarHilera(PtrHilera ArrayHilera);
+//void EliminarHilera(PtrHilera ArrayHilera);
 
-void verificar(PtrHilera& ArrayHilera)
-{
-	PtrHilera Aux = NULL;
-	Aux = ArrayHilera;
-	while (Aux != NULL)
-	{
-		if (Aux->contador <= Aux->longitud)
-		{
-			PtrCadena nuevo = new (cadena);
-			iniciarCaracter(nuevo);
-			añadirCaracter(Aux->caracter, nuevo);
-			Aux->contador++;
-		}
-		if (Aux->contador > Aux->longitud)
-		{
-			if (Aux->caracter == NULL)
-			{
-				EliminarHilera(ArrayHilera);
-			}
-			eliminarCaracter(Aux->caracter);
-		}
-
-		Aux = Aux->siguiente;
-	}
-}
+//void verificar(PtrHilera& ArrayHilera)
+//{
+//	PtrHilera Aux = NULL;
+//	Aux = ArrayHilera;
+//	while (Aux != NULL)
+//	{
+//		if (Aux->contador <= Aux->longitud)
+//		{
+//			PtrCadena nuevo = new (cadena);
+//			iniciarCaracter(nuevo);
+//			añadirCaracter(Aux->caracter, nuevo);
+//			Aux->contador++;
+//		}
+//		if (Aux->contador > Aux->longitud)
+//		{
+//			if (Aux->caracter == NULL)
+//			{
+//				EliminarHilera(ArrayHilera);
+//			}
+//			eliminarCaracter(Aux->caracter);
+//		}
+//
+//		Aux = Aux->siguiente;
+//	}
+//}
 
 //Programa principal
 int main()
 {
+	printf("Cantidad de hileras: %d", total);
 	if (!al_init())
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Could not initialize Allegro 5 ", NULL, NULL);
@@ -201,7 +208,7 @@ int main()
 	al_reserve_samples(1);
 	al_install_keyboard();
 
-	display = al_create_display(800, 600);
+	display = al_create_display(900, 600);
 	al_set_new_display_flags(ALLEGRO_WINDOWED);
 	al_set_window_title(display, "MATRIX");
 
@@ -210,7 +217,8 @@ int main()
 		al_show_native_message_box(display, "ERROR", "Display Settings", "Display Window was not created successfully", NULL, NULL);
 	}
 
-	fuente = al_load_font("Chiken.otf", 12, NULL);
+	//fuente = al_load_font("Chiken.otf", 12, NULL);
+	fuente = al_load_font("Montserrat-Regular.ttf", 12, NULL);
 	intro = al_load_sample("MUSICA/intro.WAV"); //sonido utilizado para la pantalla inical
 	fuente2 = al_load_font("Chiken.otf", 20, NULL); //Fuente para la pantalla inicial
 	fondo = al_load_sample("MUSICA/sound.wav"); //Sonido de fondo durante la simulación
@@ -221,7 +229,7 @@ int main()
 	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
 
 
-	ALLEGRO_TIMER* timer = al_create_timer(2.0 / FPS); //Timer para la simulacion 
+	ALLEGRO_TIMER* timer = al_create_timer(10.0 / FPS); //Timer para la simulacion 
 	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer));
 
 	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10); //Timer para la pantalla inicial
@@ -241,7 +249,7 @@ int main()
 			if (eventos.timer.source == timer2) {
 				if (cont < 10) {
 					al_play_sample(intro, 1.0, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, matrix[cont]);
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 400, 300, ALLEGRO_ALIGN_LEFT, matrix[cont]);
 					cont++;
 				}
 				else if (cont == 15) {
@@ -249,7 +257,7 @@ int main()
 					cont++;
 				}
 				else {
-					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 360, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
+					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 400, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
 					cont++; 
 				}
 			}
@@ -258,28 +266,26 @@ int main()
 	}
 	al_destroy_font(fuente2);
 	al_destroy_sample(intro);
-
+	
 	
 	
 	 
 	PtrHilera ArrayHileras;
 	InicializarArray(ArrayHileras, total);	
 	
-	
-
 
 	bool done = false;
 	al_start_timer(timer); //Timer para la simulacion
 	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL); //Sonido de fondo durante la simulacion
-
+	
 	//INICIO DE LA SIMULACION
 	//La simulación termina si se presicona la tecla ESCAPE
 	while (!done)
 	{
+		
 
 		ALLEGRO_EVENT eventos;
 		al_wait_for_event(Cola_eventos, &eventos);
-		al_clear_to_color(al_map_rgb(0, 0, 0));
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
 			switch (eventos.keyboard.keycode)
@@ -290,9 +296,11 @@ int main()
 			}
 		}
 		if (eventos.type == ALLEGRO_EVENT_TIMER) {
-			if (eventos.timer.source == timer) {
+			if (eventos.timer.source == timer) 
+			{
 				dibujar(ArrayHileras);
-				verificar(ArrayHileras);
+				//verificar(ArrayHileras);
+				al_flip_display();
 			}
 		}
 	}
