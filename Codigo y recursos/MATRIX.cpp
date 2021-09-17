@@ -29,12 +29,9 @@ using namespace std;
 #define FPS 60.0
 
 #pragma warning(disable:4996);
+int coordenadas[50];
+int total = 50; //Total de cadenas de caracteres que caen en pantalla
 
-
-
-
-//int total = (int)(30 + rand() % 21); //Total de cadenas de caracteres que caen en pantalla
-int total = 30;
 
 
 typedef struct cadena {
@@ -46,11 +43,13 @@ typedef struct hilera {
 	int longitud;
 	int X;
 	int Y;
-	//bool estado;
+	int menos;
 	int contador;
 	PtrCadena caracter;
 	hilera* siguiente;
 }*PtrHilera;
+
+
 
 long g_seed = 1;
 inline int fastrand() {
@@ -64,18 +63,30 @@ char GenerarRandom()
 	return c;
 }
 
-//Genera un número random entre 5 y 20
+//Genera un número random entre 8 y 20
 int longitud()
 {
-	return (int)(5 + fastrand() % 20);
+	return (int)(10 + fastrand() % 16);
 }
 
 /*Añade un caracter a la lista enlazada de caracteres*/
 void añadirCaracter(PtrCadena& caracter, PtrCadena& nuevo)
 {
-	if (caracter != NULL)
-		nuevo->siguiente = caracter;
-	caracter = nuevo;
+	PtrCadena Aux;
+	Aux = caracter;
+	if (Aux != NULL)
+	{
+		while (Aux->siguiente != NULL)
+		{
+			Aux = Aux->siguiente;
+		}
+
+		Aux->siguiente = nuevo;
+	}
+	else
+	{
+		caracter = nuevo;
+	}
 }
 
 //Asigna un caracter random y NULL al puntero siguiente
@@ -88,19 +99,49 @@ void iniciarCaracter(cadena*& caracter)
 //Añade una hilera a la lista enlazada de hileras
 void añadirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
 {
-	if (arrayHilera != NULL)
+	//if (arrayHilera != NULL)
 	nuevo->siguiente = arrayHilera;
 	arrayHilera = nuevo;
+}
+
+//Genera una coordenanda x multiplo de 13 y diferente a las coordenas almacenadas en el array de coordenadas
+int generarX()
+{
+	int x = rand() % 884;
+	bool estado = false;
+	if (x % 13 != 0)
+	{
+		x = (int)(x / 13);
+		x = x * 13;
+	}
+	for (int i = 0; i < 50 && !estado; i++)
+	{
+		if (coordenadas[i] == x)
+		{
+			x += 13;
+			i = 0;
+		}
+		if (x > 884)
+			x = 0;
+		if (coordenadas[i] == 0)
+		{
+			coordenadas[i] = x;
+			estado = true;
+		}
+	}
+	return x;
 }
 
 //Crea una hilera e inicializa los atributos de la hilera
 void crearHilera(PtrHilera& Aux)
 {
 	Aux->longitud = longitud();
-	Aux->X = 5 + rand() % 890;
+	Aux->X = generarX();
 	Aux->Y = 5 + rand() % 300;
 	Aux->siguiente = NULL;
 	Aux->contador = 1;
+	Aux->menos = 0;
+	Aux->caracter = NULL;
 	Aux->caracter = new (cadena);
 	iniciarCaracter(Aux->caracter);
 }
@@ -117,7 +158,7 @@ void InicializarArray(PtrHilera& ArrayHileras, int total)
 	}
 }
 
-
+//Imprime en pantalla los caracteres de cada array
 void dibujar(PtrHilera& ArrayHileras)
 {
 	PtrHilera Aux = NULL;
@@ -125,75 +166,169 @@ void dibujar(PtrHilera& ArrayHileras)
 	while (Aux != NULL)
 	{
 		PtrCadena Aux2 = Aux->caracter;
-		int cont = 0;
+		int cont = 1;
 		int Y = Aux->Y;
 		int X = Aux->X;
 		while (Aux2 != NULL)
 		{
-			if (cont == 0)
+			if (Aux->contador <= (Aux->longitud) - 5)
 			{
-				al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				if (cont == Aux->contador)
+				{
+					al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				}
+				else
+					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
 			}
-			else
-				al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			else 
+			{
+				if (cont == (Aux->contador-Aux->menos))
+				{
+					al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				}
+				else if (cont == 6)
+					al_draw_text(fuente, al_map_rgb(0, 190, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 5)
+					al_draw_text(fuente, al_map_rgb(0, 160, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 4)
+					al_draw_text(fuente, al_map_rgb(0, 130, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 3)
+					al_draw_text(fuente, al_map_rgb(0, 100, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 2)
+					al_draw_text(fuente, al_map_rgb(0, 80, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 1)
+					al_draw_text(fuente, al_map_rgb(0, 50, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else
+					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			}
 			cont++;
-			Y += 20;
+			Y += 15;
 			Aux2 = Aux2->siguiente;
 		}
 		Aux = Aux->siguiente;
 	}
 }
 
-void eliminarCaracter(PtrCadena& cadena)
+//Elimina la coordenada x del array de coordenadas y desplaza todos los elementos a la izquierda
+//despues de la posición de donde fue borrada la coordenada
+void eliminarCoordenada(int X)
+{
+	bool encontrado = false;
+	for (int i = 0; i < 50; i++)
+	{
+		if (coordenadas[i] == X)
+			encontrado = true;
+		if (encontrado)
+			coordenadas[i] = coordenadas[i + 1];
+		if (i == 49)
+			coordenadas[i] == 0;
+	}
+}
+
+//Elimina el caracter de la cadena
+void eliminarCaracter(PtrCadena& cadena, int X)
 {
 	PtrCadena Aux = NULL;
 	Aux = cadena;
-	PtrCadena Aux2 = NULL;
-	if (Aux->siguiente != NULL)
+	cadena = cadena->siguiente;
+	delete(Aux);
+
+	if (cadena == NULL)
+		eliminarCoordenada(X);	
+}
+
+//Elimina la hilera del Array de Hileras
+void EliminarHilera(PtrHilera& ArrayHilera)
+{
+	PtrHilera Aux = NULL;
+	PtrHilera Aux2 = NULL;
+	Aux = ArrayHilera;
+	if (Aux->caracter != NULL)
 	{
-		while (Aux->siguiente != NULL)
+		Aux2 = Aux;
+		while (Aux != NULL)
 		{
+			if (Aux->caracter == NULL)
+			{
+				if (Aux->siguiente == NULL)
+				{
+					Aux2->siguiente = NULL;
+					delete(Aux);
+					break;
+				}
+				else
+				{
+					Aux2->siguiente = Aux->siguiente;
+					delete(Aux);
+					break;
+				}
+			}
 			Aux2 = Aux;
 			Aux = Aux->siguiente;
 		}
-		delete(Aux);
-		Aux2->siguiente = NULL;
 	}
-	delete (Aux);
-	cadena = NULL;
+	else 
+	{
+		ArrayHilera = Aux->siguiente;
+		delete(Aux);
+	}
 }
 
-//void EliminarHilera(PtrHilera ArrayHilera);
+//Revisa si las hileras ya cumplieron su maximo de caracteres, y si es así, comienza a
+//borrar los caracteres, manda a llamar la funcion de borrar hilera en caso de que la
+//hilera ya no tenga caracteres y crea nuevas hileras según la cantidad de hileras eliminadas
+void verificar(PtrHilera& ArrayHilera)
+{
+	bool eliminado = false;
+	int cont = 0;
+	PtrHilera Aux = NULL;
+	Aux = ArrayHilera;
+	while (Aux != NULL)
+	{
+		if (Aux->contador <= Aux->longitud)
+		{
+			PtrCadena nuevo = new (cadena);
+			iniciarCaracter(nuevo);
+			añadirCaracter(Aux->caracter, nuevo);
+			Aux->contador++;
+		}
+		if (Aux->contador > Aux->longitud)
+		{
+			if (Aux->caracter == NULL)
+			{
+				Aux = Aux->siguiente;
+				EliminarHilera(ArrayHilera);
+				eliminado = true;
+				cont++;
+				continue;
+			}
+			else
+			{
+				eliminarCaracter(Aux->caracter, Aux->X);
+				Aux->menos++;
+				Aux->Y += 15;
+			}
+				
+		}
 
-//void verificar(PtrHilera& ArrayHilera)
-//{
-//	PtrHilera Aux = NULL;
-//	Aux = ArrayHilera;
-//	while (Aux != NULL)
-//	{
-//		if (Aux->contador <= Aux->longitud)
-//		{
-//			PtrCadena nuevo = new (cadena);
-//			iniciarCaracter(nuevo);
-//			añadirCaracter(Aux->caracter, nuevo);
-//			Aux->contador++;
-//		}
-//		if (Aux->contador > Aux->longitud)
-//		{
-//			if (Aux->caracter == NULL)
-//			{
-//				EliminarHilera(ArrayHilera);
-//			}
-//			eliminarCaracter(Aux->caracter);
-//		}
-//
-//		Aux = Aux->siguiente;
-//	}
-//}
+		Aux = Aux->siguiente;
+	}
+	if (eliminado)
+	{
+		for (int i = 0; i < cont; i++) 
+		{
+			PtrHilera Aux = new (hilera);
+			crearHilera(Aux);
+			añadirHilera(ArrayHilera, Aux);
+		}	
+	}
+}
 
 //Programa principal
 int main()
 {
+	/*srand(time(NULL));
+	total = 30 + rand() % 21;*/
 	printf("Cantidad de hileras: %d", total);
 	if (!al_init())
 	{
@@ -217,8 +352,7 @@ int main()
 		al_show_native_message_box(display, "ERROR", "Display Settings", "Display Window was not created successfully", NULL, NULL);
 	}
 
-	//fuente = al_load_font("Chiken.otf", 12, NULL);
-	fuente = al_load_font("Montserrat-Regular.ttf", 12, NULL);
+	fuente = al_load_font("Montserrat-Regular.ttf", 12, NULL); //Fuente utilizada para la simulacion
 	intro = al_load_sample("MUSICA/intro.WAV"); //sonido utilizado para la pantalla inical
 	fuente2 = al_load_font("Chiken.otf", 20, NULL); //Fuente para la pantalla inicial
 	fondo = al_load_sample("MUSICA/sound.wav"); //Sonido de fondo durante la simulación
@@ -229,7 +363,7 @@ int main()
 	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
 
 
-	ALLEGRO_TIMER* timer = al_create_timer(10.0 / FPS); //Timer para la simulacion 
+	ALLEGRO_TIMER* timer = al_create_timer(20.0 / FPS); //Timer para la simulacion 
 	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer));
 
 	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10); //Timer para la pantalla inicial
@@ -269,7 +403,7 @@ int main()
 	
 	
 	
-	 
+	//Crea el array de hileras
 	PtrHilera ArrayHileras;
 	InicializarArray(ArrayHileras, total);	
 	
@@ -282,8 +416,6 @@ int main()
 	//La simulación termina si se presicona la tecla ESCAPE
 	while (!done)
 	{
-		
-
 		ALLEGRO_EVENT eventos;
 		al_wait_for_event(Cola_eventos, &eventos);
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
@@ -298,8 +430,9 @@ int main()
 		if (eventos.type == ALLEGRO_EVENT_TIMER) {
 			if (eventos.timer.source == timer) 
 			{
+				al_clear_to_color(al_map_rgb(0, 0, 0));
 				dibujar(ArrayHileras);
-				//verificar(ArrayHileras);
+				verificar(ArrayHileras);
 				al_flip_display();
 			}
 		}
