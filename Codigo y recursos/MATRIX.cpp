@@ -36,6 +36,7 @@ using namespace std;
 int coordenadas[50];
 int agrupacionPista[50] = { 0 };  // total de pistas en pantalla
 
+
 // Estadisticas
 unsigned t0, t1;  // valores de conteo del tiempo
 int elementosPistas = 0; // cantidad de letras pintadas por pista
@@ -113,39 +114,37 @@ void añadirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
 }
 
 //Genera una coordenanda x multiplo de 13 y diferente a las coordenas almacenadas en el array de coordenadas
-int generarX()
+int generarX(int total)
 {
-	int x = rand() % 884;
-	bool estado = false;
-	if (x % 13 != 0)
-	{
-		x = (int)(x / 13);
-		x = x * 13;
-	}
-	for (int i = 0; i < 50 && !estado; i++)
-	{
-		if (coordenadas[i] == x)
-		{
+	int inicio = (int)(900 / 2) - ((total * 13) / 2);
+	int x = inicio;
+	int i;
+	for (i = 0; i < total; i++) {
+		if (coordenadas[i] == x) {
 			x += 13;
 			i = 0;
 		}
-		if (x > 884)
-			x = 0;
+		if (x > (13 * total) + inicio) {
+			x = inicio;
+			i = 0;
+		}
+	}
+	for (i = 0; i < total; i++) {
 		if (coordenadas[i] == 0)
 		{
-			agrupacionPista[(x / 13) -1] += 1;
+			agrupacionPista[(x / 13) - 1] += 1;
 			coordenadas[i] = x;
-			estado = true;
+			break;
 		}
 	}
 	return x;
 }
 
 //Crea una hilera e inicializa los atributos de la hilera
-void crearHilera(PtrHilera& Aux)
+void crearHilera(PtrHilera& Aux, int total)
 {
 	Aux->longitud = longitud();
-	Aux->X = generarX();
+	Aux->X = generarX(total);
 	Aux->Y = 5 + rand() % 300;
 	Aux->siguiente = NULL;
 	Aux->contador = 1;
@@ -162,7 +161,7 @@ void InicializarArray(PtrHilera& ArrayHileras, int total)
 	ArrayHileras = NULL;
 	for (int i = 0; i < total; i++) {
 		PtrHilera Aux = new (hilera);
-		crearHilera(Aux);
+		crearHilera(Aux, total);
 		añadirHilera(ArrayHileras, Aux);
 	}
 }
@@ -233,6 +232,7 @@ void EliminarHilera(PtrHilera& ArrayHilera)
 	}
 }
 
+//Elimina las variables anónimas y devuelve la memoria al sistema
 void destruirArrayHileras(PtrHilera& ArrayHileras) {
 	PtrHilera Aux;
 	Aux = ArrayHileras;
@@ -254,7 +254,7 @@ void destruirArrayHileras(PtrHilera& ArrayHileras) {
 //Revisa si las hileras ya cumplieron su maximo de caracteres, y si es as�, comienza a
 //borrar los caracteres, manda a llamar la funcion de borrar hilera en caso de que la
 //hilera ya no tenga caracteres y crea nuevas hileras seg�n la cantidad de hileras eliminadas
-void verificar(PtrHilera& ArrayHilera)
+void verificar(PtrHilera& ArrayHilera, int total)
 {
 	bool eliminado = false;
 	int cont = 0;
@@ -293,7 +293,7 @@ void verificar(PtrHilera& ArrayHilera)
 		for (int i = 0; i < cont; i++)
 		{
 			PtrHilera Aux = new (hilera);
-			crearHilera(Aux);
+			crearHilera(Aux, total);
 			añadirHilera(ArrayHilera, Aux);
 		}
 	}
@@ -388,7 +388,7 @@ void guardarEstadisticas(int total) {
 	archivo << "Fecha y Hora: " + str << endl;
 	archivo << "Cantidad de pistas: " + TotalPistas << endl;
 	archivo << "Agrupaciones por pista: " << endl;
-	for (int i = 0; i < total - 1; i++) {
+	for (int i = 0; i < 50; i++) {
 		if (agrupacionPista[i] != 0)
 			archivo << agrupacionPista[i] << ", ";
 	}archivo << endl;
@@ -430,9 +430,9 @@ void CargarArchivo(ALLEGRO_FONT* fuente, int inicio, int fin) {
 //Programa principal
 int main()
 {
-	/*srand(time(NULL));
-	const int total = 30 + rand() % 21;*/  //Total de cadenas de caracteres que caen en pantalla
-	const int total = 50;
+	srand(time(NULL));
+	const int total = 30 + rand() % 21; //Total de cadenas de caracteres que caen en pantalla
+	
 	printf("Cantidad de hileras: %d", total);
 	cout << endl;
 	if (!al_init())
@@ -476,7 +476,6 @@ int main()
 	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
 	
 
-
 	al_start_timer(timer2);
 	int cont = 0;
 	const char* matrix[] = { 
@@ -517,6 +516,7 @@ int main()
 	PtrHilera ArrayHileras;
 	InicializarArray(ArrayHileras, total);
 
+
 	bool done = false;
 	al_start_timer(timer); //Timer para la simulacion
 	t0 = clock();
@@ -544,7 +544,7 @@ int main()
 			{
 				al_clear_to_color(al_map_rgb(0, 0, 0));
 				dibujar(ArrayHileras);
-				verificar(ArrayHileras);
+				verificar(ArrayHileras, total);
 				al_flip_display();
 			}
 		}
@@ -577,13 +577,11 @@ int main()
 		}
 		if (eventos.type == ALLEGRO_EVENT_TIMER)
 		{
-			//if (eventos.timer.source == timer){
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_text(fuente, al_map_rgb(255, 255, 255), 10, 10, ALLEGRO_ALIGN_LEFT, "ESTADISTICAS");
 			al_draw_bitmap(Flecha, 100, 500, NULL);
 			al_draw_bitmap(Flecha, 800, 500, ALLEGRO_FLIP_HORIZONTAL);
 			CargarArchivo(fuente, inicio, fin);
-			//}
 		}
 		if (eventos.type == ALLEGRO_EVENT_MOUSE_AXES)
 		{
@@ -598,8 +596,8 @@ int main()
 			{
 				if (eventos.mouse.button & 1) {
 					if (inicio > 0) {
-						inicio -= 29;
-						fin -= 29;
+						inicio -= 28;
+						fin -= 28;
 					}
 				}
 			}
@@ -609,8 +607,8 @@ int main()
 			if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 			{
 				if (eventos.mouse.button & 1) {
-					inicio += 29;
-					fin += 29;
+					inicio += 28;
+					fin += 28;
 				}
 			}
 		}
