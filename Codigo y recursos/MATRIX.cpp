@@ -1,4 +1,4 @@
-
+ï»¿
 
 #include <stdio.h>
 #include <iostream>
@@ -34,8 +34,7 @@ using namespace std;
 
 #pragma warning(disable:4996)
 int coordenadas[50];
-int total = 50; //Total de cadenas de caracteres que caen en pantalla
-int agrupacionPista[50] = {0};  // total de pistas en pantalla
+int agrupacionPista[50] = { 0 };  // total de pistas en pantalla
 
 // Estadisticas
 unsigned t0, t1;  // valores de conteo del tiempo
@@ -72,14 +71,14 @@ char GenerarRandom()
 	return c;
 }
 
-//Genera un número random entre 8 y 20
+//Genera un nï¿½mero random entre 8 y 20
 int longitud()
 {
 	return (int)(10 + fastrand() % 16);
 }
 
-/*Añade un caracter a la lista enlazada de caracteres*/
-void añadirCaracter(PtrCadena& caracter, PtrCadena& nuevo)
+/*Aï¿½ade un caracter a la lista enlazada de caracteres*/
+void aÃ±adirCaracter(PtrCadena& caracter, PtrCadena& nuevo)
 {
 	PtrCadena Aux;
 	Aux = caracter;
@@ -105,8 +104,8 @@ void iniciarCaracter(cadena*& caracter)
 	caracter->siguiente = NULL;
 }
 
-//Añade una hilera a la lista enlazada de hileras
-void añadirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
+//AÃ±ade una hilera a la lista enlazada de hileras
+void aÃ±adirHilera(PtrHilera& arrayHilera, PtrHilera& nuevo)
 {
 	//if (arrayHilera != NULL)
 	nuevo->siguiente = arrayHilera;
@@ -134,6 +133,7 @@ int generarX()
 			x = 0;
 		if (coordenadas[i] == 0)
 		{
+			agrupacionPista[(x / 13) -1] += 1;
 			coordenadas[i] = x;
 			estado = true;
 		}
@@ -156,83 +156,20 @@ void crearHilera(PtrHilera& Aux)
 }
 
 //Crea una cantidad de hileras segun el valor de la variable total
-//Son las hileras que se añadiran a la lista enlazada
+//Son las hileras que se aï¿½adiran a la lista enlazada
 void InicializarArray(PtrHilera& ArrayHileras, int total)
 {
 	ArrayHileras = NULL;
 	for (int i = 0; i < total; i++) {
 		PtrHilera Aux = new (hilera);
 		crearHilera(Aux);
-		añadirHilera(ArrayHileras, Aux);
+		aÃ±adirHilera(ArrayHileras, Aux);
 	}
 }
 
-//Imprime en pantalla los caracteres de cada array
-void dibujar(PtrHilera& ArrayHileras)
-{
-	
-	PtrHilera Aux = NULL;
-	Aux = ArrayHileras;
-	while (Aux != NULL)
-	{
-		PtrCadena Aux2 = Aux->caracter;
-		int cont = 1;
-		int Y = Aux->Y;
-		int X = Aux->X;
-
-		
-		while (Aux2 != NULL)
-		{
-			if (Aux->contador <= (Aux->longitud) - 5)
-			{
-				if (cont == Aux->contador)
-				{
-					al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				}
-				else
-					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-			}
-			else 
-			{
-				if (cont == (Aux->contador-Aux->menos))
-				{
-					al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				}
-				else if (cont == 6)
-					al_draw_text(fuente, al_map_rgb(0, 190, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				else if (cont == 5)
-					al_draw_text(fuente, al_map_rgb(0, 160, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				else if (cont == 4)
-					al_draw_text(fuente, al_map_rgb(0, 130, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				else if (cont == 3)
-					al_draw_text(fuente, al_map_rgb(0, 100, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				else if (cont == 2)
-					al_draw_text(fuente, al_map_rgb(0, 80, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				else if (cont == 1)
-					al_draw_text(fuente, al_map_rgb(0, 50, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-				else
-					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
-			}
-			
-			cont++;
-			Y += 15;
-			Aux2 = Aux2->siguiente;
-		}
-		cantidadLetras += Aux->longitud; // suma total de cada una de las letras que fue mostrada en pantalla 
-		// calcula la cantidad de letras que se mostro segun la pista que utilizó
-		for (int i = 0; i < total; i++) {
-			int elementoActual = coordenadas[i];
-			if (elementoActual == Aux->X) {
-				agrupacionPista[i] += 1;
-			}
-		}
-		Aux = Aux->siguiente;
-		
-	}
-}
 
 //Elimina la coordenada x del array de coordenadas y desplaza todos los elementos a la izquierda
-//despues de la posición de donde fue borrada la coordenada
+//despues de la posiciï¿½n de donde fue borrada la coordenada
 void eliminarCoordenada(int X)
 {
 	bool encontrado = false;
@@ -256,7 +193,7 @@ void eliminarCaracter(PtrCadena& cadena, int X)
 	delete(Aux);
 
 	if (cadena == NULL)
-		eliminarCoordenada(X);	
+		eliminarCoordenada(X);
 }
 
 //Elimina la hilera del Array de Hileras
@@ -289,16 +226,34 @@ void EliminarHilera(PtrHilera& ArrayHilera)
 			Aux = Aux->siguiente;
 		}
 	}
-	else 
+	else
 	{
 		ArrayHilera = Aux->siguiente;
 		delete(Aux);
 	}
 }
 
-//Revisa si las hileras ya cumplieron su maximo de caracteres, y si es así, comienza a
+void destruirArrayHileras(PtrHilera& ArrayHileras) {
+	PtrHilera Aux;
+	Aux = ArrayHileras;
+	while (Aux != NULL)
+	{
+		while (Aux->caracter != NULL)
+		{
+			PtrCadena Aux2 = NULL;
+			Aux2 = Aux->caracter;
+			Aux->caracter = Aux->caracter->siguiente;
+			delete(Aux2);
+		}
+		ArrayHileras = ArrayHileras->siguiente;
+		delete(Aux);
+		Aux = ArrayHileras;
+	}
+}
+
+//Revisa si las hileras ya cumplieron su maximo de caracteres, y si es asï¿½, comienza a
 //borrar los caracteres, manda a llamar la funcion de borrar hilera en caso de que la
-//hilera ya no tenga caracteres y crea nuevas hileras según la cantidad de hileras eliminadas
+//hilera ya no tenga caracteres y crea nuevas hileras segï¿½n la cantidad de hileras eliminadas
 void verificar(PtrHilera& ArrayHilera)
 {
 	bool eliminado = false;
@@ -311,7 +266,7 @@ void verificar(PtrHilera& ArrayHilera)
 		{
 			PtrCadena nuevo = new (cadena);
 			iniciarCaracter(nuevo);
-			añadirCaracter(Aux->caracter, nuevo);
+			aÃ±adirCaracter(Aux->caracter, nuevo);
 			Aux->contador++;
 		}
 		if (Aux->contador > Aux->longitud)
@@ -329,33 +284,91 @@ void verificar(PtrHilera& ArrayHilera)
 				eliminarCaracter(Aux->caracter, Aux->X);
 				Aux->menos++;
 				Aux->Y += 15;
-			}	
+			}
 		}
 		Aux = Aux->siguiente;
 	}
 	if (eliminado)
 	{
-		for (int i = 0; i < cont; i++) 
+		for (int i = 0; i < cont; i++)
 		{
 			PtrHilera Aux = new (hilera);
 			crearHilera(Aux);
-			añadirHilera(ArrayHilera, Aux);
-		}	
+			aÃ±adirHilera(ArrayHilera, Aux);
+		}
 	}
 }
 
-//Almacena cada uno de los datos de las estadísticas en un archivo de texto
-//Calcula el tiempo de ejecución final el terminar la ejecución de las funciones principales
+
+//Imprime en pantalla los caracteres de cada array
+void dibujar(PtrHilera& ArrayHileras)
+{
+
+	PtrHilera Aux = NULL;
+	Aux = ArrayHileras;
+	while (Aux != NULL)
+	{
+		PtrCadena Aux2 = Aux->caracter;
+		int cont = 1;
+		int Y = Aux->Y;
+		int X = Aux->X;
+
+		while (Aux2 != NULL)
+		{
+			if (Aux->contador <= (Aux->longitud) - 5)
+			{
+				if (cont == Aux->contador)
+				{
+					al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				}
+				else
+					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			}
+			else
+			{
+				if (cont == (Aux->contador - Aux->menos))
+				{
+					al_draw_text(fuente, al_map_rgb(255, 255, 255), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				}
+				else if (cont == 6)
+					al_draw_text(fuente, al_map_rgb(0, 190, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 5)
+					al_draw_text(fuente, al_map_rgb(0, 160, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 4)
+					al_draw_text(fuente, al_map_rgb(0, 130, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 3)
+					al_draw_text(fuente, al_map_rgb(0, 100, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 2)
+					al_draw_text(fuente, al_map_rgb(0, 80, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else if (cont == 1)
+					al_draw_text(fuente, al_map_rgb(0, 50, 0), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+				else
+					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
+			}
+
+			cont++;
+			Y += 15;
+			Aux2 = Aux2->siguiente;
+		}
+
+		cantidadLetras++;
+		Aux = Aux->siguiente;
+
+	}
+}
+
+//Almacena cada uno de los datos de las estadï¿½sticas en un archivo de texto
+//Calcula el tiempo de ejecuciï¿½n final el terminar la ejecuciï¿½n de las funciones principales
 //Obtiene la fecha y hora actual para ser guardado los datos de tal forma que se muestre un orden temporal
-//Abre el archivo de texto y almacena cada dato por línea en formato de string
-void guardarEstadisticas() {
+//Abre el archivo de texto y almacena cada dato por lï¿½nea en formato de string
+void guardarEstadisticas(int total) {
 	string TotalPistas, agrupacionesPista, tiempoSimulacion, letrasPintadas;
 	string nombreArchivo = "datos.txt";
-	
-	// Determinar tiempo de ejecución
+
+	// Determinar tiempo de ejecuciï¿½n
 	t1 = clock();
 	double tiempoTotal = (double(t1 - t0) / CLOCKS_PER_SEC);
-	cout << "Tiempo tota de ejecución: " << tiempoTotal << endl;
+	cout << "Tiempo tota de ejecucion: " << tiempoTotal << endl;
 	tiempoSimulacion = to_string(tiempoTotal);
 
 	// Obtiene la fecha y hora actual
@@ -386,15 +399,40 @@ void guardarEstadisticas() {
 	archivo.close();
 	cout << "Guardado correctamente" << endl;
 	cout << endl;
-	
+
 }
 
+//Se carga el archivo a memoria y se imprime en pantalla las lineas que estan en el
+//rango que abarca las variables inicio y fin.
+void CargarArchivo(ALLEGRO_FONT* fuente, int inicio, int fin) {
+	string nombreArchivo = "datos.txt";
+	ifstream archivo(nombreArchivo.c_str());
+	string linea;
+
+	int i = 30;
+	int cont = 0;
+	constexpr int CHAR_LENGTH = 1;
+	// Obtener linea de archivo, y almacenar contenido en cada "linea" para ser mostrada en pantalla
+	while (getline(archivo, linea)) {
+		char* char_arr;
+		string str_obj(linea);
+		char_arr = &str_obj[0];
+		//Si el contador se encuentra entre las variables inicio y fin, se imprime
+		//el contenido de la lÃ­nea de texto
+		if (cont >= inicio && cont < fin) {
+			al_draw_text(fuente, al_map_rgb(255, 255, 255), 5, i, 0, char_arr);
+			i += 15;
+		}
+		cont++;
+	}
+}
 
 //Programa principal
 int main()
 {
 	/*srand(time(NULL));
-	const int total = 30 + rand() % 21;*/
+	const int total = 30 + rand() % 21;*/  //Total de cadenas de caracteres que caen en pantalla
+	const int total = 50;
 	printf("Cantidad de hileras: %d", total);
 	cout << endl;
 	if (!al_init())
@@ -409,6 +447,7 @@ int main()
 	al_init_acodec_addon();
 	al_reserve_samples(1);
 	al_install_keyboard();
+	al_init_image_addon();
 
 	display = al_create_display(900, 600);
 	al_set_new_display_flags(ALLEGRO_WINDOWED);
@@ -422,28 +461,28 @@ int main()
 	fuente = al_load_font("Montserrat-Regular.ttf", 12, NULL); //Fuente utilizada para la simulacion
 	intro = al_load_sample("MUSICA/intro.WAV"); //sonido utilizado para la pantalla inical
 	fuente2 = al_load_font("Chiken.otf", 20, NULL); //Fuente para la pantalla inicial
-	fondo = al_load_sample("MUSICA/sound.wav"); //Sonido de fondo durante la simulación
+	fondo = al_load_sample("MUSICA/sound.wav"); //Sonido de fondo durante la simulaciï¿½n
+
 
 	ALLEGRO_EVENT_QUEUE* Cola_eventos = al_create_event_queue(); //Se cre la cola de eventos
-
-	al_install_keyboard();
-	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
-
-
-	ALLEGRO_TIMER* timer = al_create_timer(20.0 / FPS); //Timer para la simulacion 
-	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer));
-
+	ALLEGRO_TIMER* timer = al_create_timer(5.0 / FPS); //Timer para la simulacion 
 	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10); //Timer para la pantalla inicial
-	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer2));
-
 	ALLEGRO_TIMER* timer3 = al_create_timer(1.0 / FPS); //Timer para la pantalla de estadisticas
-	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer3));
-
-
+	ALLEGRO_BITMAP* Flecha = al_load_bitmap("Imagenes/Flecha.png");
 	
+	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer));
+	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer2));
+	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer3));
+	al_register_event_source(Cola_eventos, al_get_keyboard_event_source());
+	
+
+
 	al_start_timer(timer2);
 	int cont = 0;
-	const char* matrix[] = { "T", "TH", "THE", "THE_", "THE M", "THE MA", "THE MAT", "THE MATR", "THE MATRI", "THE MATRIX" };
+	const char* matrix[] = { 
+		"T", "TH", "THE", "THE_", 
+		"THE M", "THE MA", "THE MAT", 
+		"THE MATR", "THE MATRI", "THE MATRIX" };
 	//PANTALLA INTRODUCTORIA
 	while (cont < 16)
 	{
@@ -463,7 +502,7 @@ int main()
 				}
 				else {
 					al_draw_text(fuente2, al_map_rgb(1, 252, 26), 400, 300, ALLEGRO_ALIGN_LEFT, "THE MATRIX");
-					cont++; 
+					cont++;
 				}
 			}
 		}
@@ -472,37 +511,36 @@ int main()
 	al_destroy_font(fuente2);
 	al_destroy_sample(intro);
 	al_stop_timer(timer2);
-	
-	
+
+
 	//Crea el array de hileras
 	PtrHilera ArrayHileras;
-	InicializarArray(ArrayHileras, total);	
+	InicializarArray(ArrayHileras, total);
 
 	bool done = false;
 	al_start_timer(timer); //Timer para la simulacion
 	t0 = clock();
-	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL); //Sonido de fondo durante la simulacion
-	
+	//Sonido de fondo durante la simulacion
+	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL); 
+
 	//INICIO DE LA SIMULACION
-	//La simulación termina si se presicona la tecla ESCAPE
+	//La simulaciÃ³n termina si se presicona la tecla ESCAPE
 	while (!done)
 	{
 		ALLEGRO_EVENT eventos;
 		al_wait_for_event(Cola_eventos, &eventos);
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
-			
 			switch (eventos.keyboard.keycode)
 			{
 			case ALLEGRO_KEY_ESCAPE:
-				guardarEstadisticas();
+				guardarEstadisticas(total);
 				done = true;
 				break;
 			}
-			
 		}
 		if (eventos.type == ALLEGRO_EVENT_TIMER) {
-			if (eventos.timer.source == timer) 
+			if (eventos.timer.source == timer)
 			{
 				al_clear_to_color(al_map_rgb(0, 0, 0));
 				dibujar(ArrayHileras);
@@ -512,59 +550,76 @@ int main()
 		}
 	}
 	al_stop_timer(timer);
-	
-	
-	
+
+
+	al_destroy_sample(fondo);
+	al_install_mouse();
+	al_register_event_source(Cola_eventos, al_get_mouse_event_source());
 
 	al_start_timer(timer3);
 	bool cond = false;
+	int inicio = 0, fin = 28;
+	int mousex = 0, mousey = 0;
+	al_clear_to_color(al_map_rgb(0, 0, 0));
 	//PANTALLA ESTADISTICAS
 	while (!cond)
 	{
 		ALLEGRO_EVENT eventos;
-		al_clear_to_color(al_map_rgb(0, 0, 0));
 		al_wait_for_event(Cola_eventos, &eventos);
-		if (eventos.type == ALLEGRO_EVENT_TIMER) 
+		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
-			if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
+			switch (eventos.keyboard.keycode)
 			{
-				switch (eventos.keyboard.keycode)
-				{
-				case ALLEGRO_KEY_ESCAPE:
-					cond = true;
-					break;
-				}
-
+			case ALLEGRO_KEY_ESCAPE:
+				cond = true;
+				break;
 			}
-			else if (eventos.type == ALLEGRO_EVENT_TIMER) 
+		}
+		if (eventos.type == ALLEGRO_EVENT_TIMER)
+		{
+			//if (eventos.timer.source == timer){
+			al_clear_to_color(al_map_rgb(0, 0, 0));
+			al_draw_text(fuente, al_map_rgb(255, 255, 255), 10, 10, ALLEGRO_ALIGN_LEFT, "ESTADISTICAS");
+			al_draw_bitmap(Flecha, 100, 500, NULL);
+			al_draw_bitmap(Flecha, 800, 500, ALLEGRO_FLIP_HORIZONTAL);
+			CargarArchivo(fuente, inicio, fin);
+			//}
+		}
+		if (eventos.type == ALLEGRO_EVENT_MOUSE_AXES)
+		{
+			mousex = eventos.mouse.x;
+			mousey = eventos.mouse.y;
+		}
+		//Si el mouse se posiciona en las flechas se pinta de amarillo la flecha y 
+		//si se presiona se vanza arriba o abajo en los resultados
+		if ((mousex >= 100 && mousex <= 150) && (mousey >= 500 && mousey <= 550)) {
+			al_draw_tinted_bitmap(Flecha, al_map_rgb(25, 250, 250), 100, 500, NULL);
+			if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 			{
-				al_draw_text(fuente, al_map_rgb(255, 255, 255), 10, 10, ALLEGRO_ALIGN_LEFT, "ESTADISTICAS");
-				// Abre el archivo de texto y lee los datos de cada linea
-				string nombreArchivo = "datos.txt";
-				ifstream archivo(nombreArchivo.c_str());
-				string linea;
-					
-				int i = 30;
-				constexpr int CHAR_LENGTH = 1;
-				// Obtener línea de archivo, y almacenar contenido en cada "linea" para ser mostrada en pantalla
-				while (getline(archivo, linea)) {
-					char* char_arr;
-					string str_obj(linea);
-					char_arr = &str_obj[0];
-					al_draw_text(fuente, al_map_rgb(255, 255, 255), 5, i, 0, char_arr);
-					i += 15;
-					
-				}	
+				if (eventos.mouse.button & 1) {
+					if (inicio > 0) {
+						inicio -= 29;
+						fin -= 29;
+					}
+				}
+			}
+		}
+		if ((mousex >= 800 && mousex <= 850) && (mousey >= 500 && mousey <= 550)) {
+			al_draw_tinted_bitmap(Flecha, al_map_rgb(25, 250, 250), 800, 500, ALLEGRO_FLIP_HORIZONTAL);
+			if (eventos.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+			{
+				if (eventos.mouse.button & 1) {
+					inicio += 29;
+					fin += 29;
+				}
 			}
 		}
 		al_flip_display();
 	}
 
+	destruirArrayHileras(ArrayHileras);
 	al_stop_timer(timer3);
 	al_destroy_font(fuente);
-	al_destroy_sample(intro);
-	
-	al_destroy_sample(fondo);
 	al_destroy_display(display);
 
 	return 0;
