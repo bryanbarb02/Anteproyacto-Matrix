@@ -1,0 +1,22 @@
+
+Fecha y Hora: 24-09-2021 00-25-16
+Cantidad de pistas: 50
+Agrupaciones por pista: 
+24, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 
+Tiempo de simulacion: 4.012000
+Cantidad de letras pintadas: 10068
+
+Fecha y Hora: 24-09-2021 00-34-33
+Cantidad de pistas: 50
+Agrupaciones por pista: 
+16, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 
+Tiempo de simulacion: 2.692000
+Cantidad de letras pintadas: 6712
+
+Fecha y Hora: 24-09-2021 00-38-44
+Cantidad de pistas: 50
+Agrupaciones por pista: 
+26, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 
+Tiempo de simulacion: 4.402000
+Cantidad de letras pintadas: 10907
+

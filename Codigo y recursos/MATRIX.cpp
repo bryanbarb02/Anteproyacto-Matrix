@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <time.h>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -16,6 +19,7 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <string>
+#include <fstream>
 
 
 ALLEGRO_DISPLAY* display;
@@ -28,11 +32,16 @@ ALLEGRO_TIMER* timer;
 using namespace std;
 #define FPS 60.0
 
-#pragma warning(disable:4996);
+#pragma warning(disable:4996)
 int coordenadas[50];
 int total = 50; //Total de cadenas de caracteres que caen en pantalla
+int agrupacionPista[50] = {0};  // total de pistas en pantalla
 
-
+// Estadisticas
+unsigned t0, t1;  // valores de conteo del tiempo
+int elementosPistas = 0; // cantidad de letras pintadas por pista
+double tiempoTotal = 0; // timepo de caidad de caracteres
+int cantidadLetras = 0;  // cantidad de letras pintadas en pantalla
 
 typedef struct cadena {
 	char letra[1];
@@ -161,6 +170,7 @@ void InicializarArray(PtrHilera& ArrayHileras, int total)
 //Imprime en pantalla los caracteres de cada array
 void dibujar(PtrHilera& ArrayHileras)
 {
+	
 	PtrHilera Aux = NULL;
 	Aux = ArrayHileras;
 	while (Aux != NULL)
@@ -169,6 +179,8 @@ void dibujar(PtrHilera& ArrayHileras)
 		int cont = 1;
 		int Y = Aux->Y;
 		int X = Aux->X;
+
+		
 		while (Aux2 != NULL)
 		{
 			if (Aux->contador <= (Aux->longitud) - 5)
@@ -201,11 +213,21 @@ void dibujar(PtrHilera& ArrayHileras)
 				else
 					al_draw_text(fuente, al_map_rgb(1, 252, 26), X, Y, ALLEGRO_ALIGN_LEFT, Aux2->letra);
 			}
+			
 			cont++;
 			Y += 15;
 			Aux2 = Aux2->siguiente;
 		}
+		cantidadLetras += Aux->longitud; // suma total de cada una de las letras que fue mostrada en pantalla 
+		// calcula la cantidad de letras que se mostro segun la pista que utilizó
+		for (int i = 0; i < total; i++) {
+			int elementoActual = coordenadas[i];
+			if (elementoActual == Aux->X) {
+				agrupacionPista[i] += 1;
+			}
+		}
 		Aux = Aux->siguiente;
+		
 	}
 }
 
@@ -221,7 +243,7 @@ void eliminarCoordenada(int X)
 		if (encontrado)
 			coordenadas[i] = coordenadas[i + 1];
 		if (i == 49)
-			coordenadas[i] == 0;
+			coordenadas[i] = 0;
 	}
 }
 
@@ -307,10 +329,8 @@ void verificar(PtrHilera& ArrayHilera)
 				eliminarCaracter(Aux->caracter, Aux->X);
 				Aux->menos++;
 				Aux->Y += 15;
-			}
-				
+			}	
 		}
-
 		Aux = Aux->siguiente;
 	}
 	if (eliminado)
@@ -324,12 +344,59 @@ void verificar(PtrHilera& ArrayHilera)
 	}
 }
 
+//Almacena cada uno de los datos de las estadísticas en un archivo de texto
+//Calcula el tiempo de ejecución final el terminar la ejecución de las funciones principales
+//Obtiene la fecha y hora actual para ser guardado los datos de tal forma que se muestre un orden temporal
+//Abre el archivo de texto y almacena cada dato por línea en formato de string
+void guardarEstadisticas() {
+	string TotalPistas, agrupacionesPista, tiempoSimulacion, letrasPintadas;
+	string nombreArchivo = "datos.txt";
+	
+	// Determinar tiempo de ejecución
+	t1 = clock();
+	double tiempoTotal = (double(t1 - t0) / CLOCKS_PER_SEC);
+	cout << "Tiempo tota de ejecución: " << tiempoTotal << endl;
+	tiempoSimulacion = to_string(tiempoTotal);
+
+	// Obtiene la fecha y hora actual
+	auto t = std::time(nullptr);
+	auto tm = *std::localtime(&t);
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
+	auto str = oss.str();
+
+	// Guardar de datos en el archivo
+	ofstream archivo;
+	archivo.open(nombreArchivo.c_str(), fstream::app);
+
+	TotalPistas = to_string(total);
+	letrasPintadas = to_string(cantidadLetras);
+
+	archivo << "Fecha y Hora: " + str << endl;
+	archivo << "Cantidad de pistas: " + TotalPistas << endl;
+	archivo << "Agrupaciones por pista: " << endl;
+	for (int i = 0; i < total - 1; i++) {
+		if (agrupacionPista[i] != 0)
+			archivo << agrupacionPista[i] << ", ";
+	}archivo << endl;
+	archivo << "Tiempo de simulacion: " + tiempoSimulacion << endl;
+	archivo << "Cantidad de letras pintadas: " + letrasPintadas << endl;
+	archivo << endl;
+
+	archivo.close();
+	cout << "Guardado correctamente" << endl;
+	cout << endl;
+	
+}
+
+
 //Programa principal
 int main()
 {
 	/*srand(time(NULL));
-	total = 30 + rand() % 21;*/
+	const int total = 30 + rand() % 21;*/
 	printf("Cantidad de hileras: %d", total);
+	cout << endl;
 	if (!al_init())
 	{
 		al_show_native_message_box(NULL, NULL, NULL, "Could not initialize Allegro 5 ", NULL, NULL);
@@ -369,6 +436,10 @@ int main()
 	ALLEGRO_TIMER* timer2 = al_create_timer(2.0 / 10); //Timer para la pantalla inicial
 	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer2));
 
+	ALLEGRO_TIMER* timer3 = al_create_timer(1.0 / FPS); //Timer para la pantalla de estadisticas
+	al_register_event_source(Cola_eventos, al_get_timer_event_source(timer3));
+
+
 	
 	al_start_timer(timer2);
 	int cont = 0;
@@ -400,16 +471,16 @@ int main()
 	}
 	al_destroy_font(fuente2);
 	al_destroy_sample(intro);
-	
+	al_stop_timer(timer2);
 	
 	
 	//Crea el array de hileras
 	PtrHilera ArrayHileras;
 	InicializarArray(ArrayHileras, total);	
-	
 
 	bool done = false;
 	al_start_timer(timer); //Timer para la simulacion
+	t0 = clock();
 	al_play_sample(fondo, 0.8, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL); //Sonido de fondo durante la simulacion
 	
 	//INICIO DE LA SIMULACION
@@ -420,12 +491,15 @@ int main()
 		al_wait_for_event(Cola_eventos, &eventos);
 		if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
 		{
+			
 			switch (eventos.keyboard.keycode)
 			{
 			case ALLEGRO_KEY_ESCAPE:
+				guardarEstadisticas();
 				done = true;
 				break;
 			}
+			
 		}
 		if (eventos.type == ALLEGRO_EVENT_TIMER) {
 			if (eventos.timer.source == timer) 
@@ -437,10 +511,63 @@ int main()
 			}
 		}
 	}
+	al_stop_timer(timer);
+	
+	
+	
+
+	al_start_timer(timer3);
+	bool cond = false;
+	//PANTALLA ESTADISTICAS
+	while (!cond)
+	{
+		ALLEGRO_EVENT eventos;
+		al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_wait_for_event(Cola_eventos, &eventos);
+		if (eventos.type == ALLEGRO_EVENT_TIMER) 
+		{
+			if (eventos.type == ALLEGRO_EVENT_KEY_DOWN)
+			{
+				switch (eventos.keyboard.keycode)
+				{
+				case ALLEGRO_KEY_ESCAPE:
+					cond = true;
+					break;
+				}
+
+			}
+			else if (eventos.type == ALLEGRO_EVENT_TIMER) 
+			{
+				al_draw_text(fuente, al_map_rgb(255, 255, 255), 10, 10, ALLEGRO_ALIGN_LEFT, "ESTADISTICAS");
+				// Abre el archivo de texto y lee los datos de cada linea
+				string nombreArchivo = "datos.txt";
+				ifstream archivo(nombreArchivo.c_str());
+				string linea;
+					
+				int i = 30;
+				constexpr int CHAR_LENGTH = 1;
+				// Obtener línea de archivo, y almacenar contenido en cada "linea" para ser mostrada en pantalla
+				while (getline(archivo, linea)) {
+					char* char_arr;
+					string str_obj(linea);
+					char_arr = &str_obj[0];
+					al_draw_text(fuente, al_map_rgb(255, 255, 255), 5, i, 0, char_arr);
+					i += 15;
+					
+				}	
+			}
+		}
+		al_flip_display();
+	}
+
+	al_stop_timer(timer3);
 	al_destroy_font(fuente);
+	al_destroy_sample(intro);
+	
 	al_destroy_sample(fondo);
 	al_destroy_display(display);
 
-
 	return 0;
 }
+
+
